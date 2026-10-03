@@ -1,0 +1,5 @@
+streamlit
+aisuite[groq]
+requests
+python-dotenv
+pandas
