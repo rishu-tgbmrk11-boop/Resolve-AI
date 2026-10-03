@@ -17,7 +17,10 @@ def _patched_convert_request(messages):
 GroqMessageConverter.convert_request = staticmethod(_patched_convert_request)
 # --- END MONKEY PATCH ---
 
-from tools import search_faq, search_products, lookup_order, lookup_customer_orders
+from tools import (
+    search_faq, search_products, lookup_order, lookup_customer_orders,
+    get_new_emails, send_email_reply
+)
 
 load_dotenv()
 
@@ -47,7 +50,10 @@ def main():
         name="SupportAgent",
         model="groq:openai/gpt-oss-120b",
         instructions=SYSTEM_PROMPT,
-        tools=[search_faq, search_products, lookup_order, lookup_customer_orders],
+        tools=[
+            search_faq, search_products, lookup_order, lookup_customer_orders,
+            get_new_emails, send_email_reply
+        ],
     )
     
     while True:

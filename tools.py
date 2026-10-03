@@ -2,6 +2,8 @@
 import pandas as pd
 import os
 
+from email_utils import fetch_unread_emails, send_reply
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 try:
@@ -12,6 +14,10 @@ except FileNotFoundError as e:
     print(f"⚠️ Warning: Dataset missing. Error: {e}")
 
 
+# ─────────────────────────────────────────────
+# EXISTING TOOLS (unchanged)
+# ─────────────────────────────────────────────
+
 def search_faq(query: str) -> str:
     """
     Search the FAQ knowledge base for answers to policy, shipping, or account questions.
@@ -20,7 +26,6 @@ def search_faq(query: str) -> str:
     print(f"\n🔧 [TOOL] search_faq(query='{query}')")
     query_lower = query.lower()
 
-    # Actual columns: Question, Answer, Category, Keywords
     matches = faq_df[
         faq_df['Question'].str.lower().str.contains(query_lower, na=False) |
         faq_df['Answer'].str.lower().str.contains(query_lower, na=False) |
@@ -48,7 +53,6 @@ def search_products(query: str) -> str:
     print(f"\n🔧 [TOOL] search_products(query='{query}')")
     query_lower = query.lower()
 
-    # Actual columns: 'Product Name', 'Product Description', 'Product Category', 'Price', 'Stock Quantity'
     matches = products_df[
         products_df['Product Name'].str.lower().str.contains(query_lower, na=False) |
         products_df['Product Description'].str.lower().str.contains(query_lower, na=False) |
@@ -81,7 +85,6 @@ def lookup_order(order_id: str) -> str:
     print(f"\n🔧 [TOOL] lookup_order(order_id='{order_id}')")
     query_id = order_id.upper().strip()
 
-    # Orders columns: order_id, customer_email, customer_name, order_date, status, tracking_number, total_amount
     match = orders_df[orders_df['order_id'].str.upper() == query_id]
 
     if match.empty:
@@ -120,3 +123,46 @@ def lookup_customer_orders(email: str) -> str:
             f"Status: {row['status']} | Total: ${row['total_amount']}"
         )
     return "\n---\n".join(results)
+
+
+# ─────────────────────────────────────────────
+# NEW EMAIL TOOLS
+# ─────────────────────────────────────────────
+
+def get_new_emails() -> str:
+    """
+    Fetch all unread emails from the customer support inbox.
+    Use this when you need to check for new customer inquiries that arrived by email.
+    """
+    print(f"\n🔧 [TOOL] get_new_emails()")
+    emails = fetch_unread_emails()
+
+    if not emails:
+        return "No new emails in the inbox."
+
+    formatted = [f"Found {len(emails)} unread email(s):\n"]
+    for e in emails:
+        formatted.append(
+            f"--- EMAIL ---\n"
+            f"From: {e['from']}\n"
+            f"Subject: {e['subject']}\n"
+            f"Body:\n{e['body']}\n"
+        )
+    return "\n".join(formatted)
+
+
+def send_email_reply(to_address: str, original_subject: str, reply_body: str) -> str:
+    """
+    Send a reply email to a customer.
+    Use this AFTER you have composed the final answer using the other tools.
+    'to_address' should be the customer's email (extracted from the 'From' field).
+    'original_subject' is the subject of the customer's email (for threading).
+    'reply_body' is your composed response text.
+    """
+    print(f"\n🔧 [TOOL] send_email_reply(to='{to_address}')")
+    success = send_reply(to_address, original_subject, reply_body)
+
+    if success:
+        return f"✅ Reply sent to {to_address}."
+    else:
+        return f"❌ Failed to send reply to {to_address}. Check email credentials."
