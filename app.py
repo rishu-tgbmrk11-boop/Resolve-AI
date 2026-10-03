@@ -58,12 +58,54 @@ agent, client = get_agent_and_client()
 # --- Sidebar for Test Data ---
 with st.sidebar:
     st.header("🧪 Test Data Helper")
-    st.markdown("**Order ID test:**")
-    st.code("Check order ORD-1050", language=None)
-    st.markdown("**Product test:**")
-    st.code("Do you have a laptop in stock?", language=None)
-    st.markdown("**FAQ test:**")
-    st.code("What is your return policy?", language=None)
+    st.caption("Click any query below to copy it, then paste it into the chat.")
+    
+    # --- Product Queries ---
+    with st.expander("🛍️ Product Queries", expanded=True):
+        st.markdown("**Stock & availability:**")
+        st.code("Do you have a laptop in stock?", language=None)
+        st.code("Is the smartphone available?", language=None)
+        st.code("Do you have any home appliances?", language=None)
+        st.markdown("**Pricing:**")
+        st.code("How much does the laptop cost?", language=None)
+        st.code("What is the price of the smartphone?", language=None)
+        st.markdown("**Product details:**")
+        st.code("Tell me about the clothing products", language=None)
+        st.code("What is the warranty on the laptop?", language=None)
+    
+    # --- Order Queries ---
+    with st.expander("📦 Order Queries"):
+        st.markdown("**By Order ID:**")
+        st.code("Check order ORD-1050", language=None)
+        st.code("What is the status of ORD-1073?", language=None)
+        st.code("Where is order ORD-1099?", language=None)
+        st.markdown("**By Email:**")
+        st.code("My email is grace.davis@example.com", language=None)
+        st.code("Look up orders for frank.anderson@example.com", language=None)
+        st.code("I don't know my order ID, my email is john.doe@example.com", language=None)
+    
+    # --- FAQ Queries ---
+    with st.expander("❓ FAQ / Policy Queries"):
+        st.markdown("**Returns & refunds:**")
+        st.code("What is your return policy?", language=None)
+        st.code("How do I return an item?", language=None)
+        st.code("How long does a refund take?", language=None)
+        st.markdown("**Payments:**")
+        st.code("Which payment methods do you accept?", language=None)
+        st.code("Is my payment secure?", language=None)
+        st.markdown("**Shipping:**")
+        st.code("How long does shipping take?", language=None)
+        st.code("Do you ship internationally?", language=None)
+    
+    # --- Multi-Tool Tests (Advanced) ---
+    with st.expander("🎯 Multi-Tool Tests (Advanced)"):
+        st.caption("These queries force the agent to use 2+ tools in sequence.")
+        st.code("My email is grace.davis@example.com. Where is my order and do you have laptops?", language=None)
+        st.code("I want to return the smartphone I bought. What is the return policy?", language=None)
+        st.code("Check order ORD-1050 and tell me the warranty on the product.", language=None)
+    
+    st.divider()
+    st.caption("💡 Tip: Watch the terminal for `🔧 [TOOL] ...` messages to see which tool the agent chose.")
 
 st.title("🎧 Resolve AI Support")
 st.markdown("Ask me about our products, policies, or your order!")
